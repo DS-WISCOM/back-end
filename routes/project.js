@@ -4,8 +4,6 @@ const router = express.Router();
 const { Project } = require('../models/project.js');
 const { Comment } = require('../models/comment.js');
 
-// DB 저장: /insertData - post
-
 // 프로젝트 전체 목록 - get, query
 
 // 프로젝트 상세 - get

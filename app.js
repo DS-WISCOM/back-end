@@ -6,6 +6,7 @@ require("dotenv").config({ path: ".env" }); // env 파일 사용을 위한 코�
 //router
 const developRouter = require("./routes/developer")
 const projectRouter = require("./routes/project")
+const insertRouter = require("./routes/insert")
 
 app.use(express.json()); // body-parser의 역할
 // application/x-www-form-urlencoded
@@ -26,6 +27,7 @@ res.send('mongoDB 연결 완료') // 출력
 // connect router
 app.use('/api/developer', developRouter)
 app.use('/api/project', projectRouter)
+app.use('/api/insert', insertRouter)
 
 
 // swagger

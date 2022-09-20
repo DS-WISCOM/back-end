@@ -19,12 +19,15 @@ const developerSchema = mongoose.Schema({
       trim: true, 
       unique: 1,
   },
-  img: { // 개발자 이미지 경로
+  img: { // 개발자 프로필 경로
       type: String
   },
   impression: { // 마무리 소감
       type: String,
       maxlength: 350
+  },
+  role:{ // 역할
+      type: String
   }
 })
 
