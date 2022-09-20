@@ -1,0 +1,19 @@
+paths:
+  /api/project/total:
+    get:
+      summary: 전체 프로젝트 조회
+      description: 프로젝트의 모든 정보를 가져옵니다.
+      parameters:
+        - name: page
+          description: "1~8 (1: default) / Up to 8 pages per page."
+          in: query
+          schema:
+            type: Number
+        - name: sort
+          description: "1: 이름순, 2: 인기순 (1: default)"
+          in: query
+          schema:
+            type: Number
+      responses:
+        '200':
+          description: 프로젝트 조회 성공
