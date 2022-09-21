@@ -10,7 +10,7 @@ const projectSchema = mongoose.Schema({
       type: String,
   },
   team_name: {  // 팀명
-      type: String
+      type: String,
   },
   img: { // 프로젝트 사진 경로
       type: String,
@@ -18,9 +18,8 @@ const projectSchema = mongoose.Schema({
   ppt: [{ // 최종 ppt 이미지화 경로
       type: String
   }],
-  developers:[{ // 팀원명
-    type: Schema.Types.ObjectId,
-    ref: 'Developer',
+  developers:[{ // 팀원
+    type: String,
     require: true
   }],
   video: { // 유튜브 링크

@@ -9,6 +9,9 @@ const developerSchema = mongoose.Schema({
   name_eng:{ // 영어 이름
       type: String,
   },
+  developer_id:{ // 개발자 id(학번)
+    type: String,
+  },
   project_id: {  // 프로젝트 id(FK)
       type: Schema.Types.ObjectId,
       ref: 'Project',
