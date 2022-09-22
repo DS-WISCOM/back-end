@@ -57,7 +57,7 @@ router.post('/:projectId/addLike', async(req, res, next) => {
         req.session.projectId = [ projectId ];
 
         // 좋아요 +1
-        await Project.findOneAndUpdate({ _id: mongoose.Types.ObjectId(projectId) }, { $inc: { likes: 1 } });
+        await Project.findOneAndUpdate({ _id: projectId }, { $inc: { likes: 1 } });
         // p = await Project.findOneAndUpdate({ _id: mongoose.Types.ObjectId(projectId) }, { $inc: { likes: 1 } }, { new: true });
       } 
       else { // 좋아요를 누른 적 있을 때
@@ -76,7 +76,7 @@ router.post('/:projectId/addLike', async(req, res, next) => {
           req.session.projectId.push(projectId);
           
           // 좋아요 +1
-          await Project.findOneAndUpdate({ _id: mongoose.Types.ObjectId(projectId) }, { $inc: { likes: 1 } });
+          await Project.findOneAndUpdate({ _id: projectId }, { $inc: { likes: 1 } });
         }
       }
       return res.status(200).json({ success: true });
