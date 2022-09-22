@@ -1,4 +1,4 @@
-var AWS = require('aws-sdk')
+/*var AWS = require('aws-sdk')
 var multer = require('multer')
 var multerS3 = require('multer-s3')
 var path = require('path')
@@ -30,4 +30,4 @@ const imageUploader = multer({
   }),
 })
 
-module.exports = imageUploader;
+module.exports = imageUploader;*/

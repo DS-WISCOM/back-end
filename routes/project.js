@@ -3,6 +3,7 @@ const router = express.Router();
 
 const { Project } = require('../models/project.js');
 const { Comment } = require('../models/comment.js');
+const { default: mongoose } = require('mongoose');
 
 // 프로젝트 전체 목록 - get, query
 router.get('/total', async (req, res) => {
@@ -29,5 +30,29 @@ router.get('/total', async (req, res) => {
 // 좋아요 등록 - post
 
 // 댓글 등록 - post
+router.post('/:projectId/addComment',(req, res) => {
+  const comment=new Comment(req.body);
+  const projectId = mongoose.Types.ObjectId(req.params.projectId);
+  console.log(projectId);
+  console.log(comment._id);
+  Project.updateOne({"_id":projectId},
+  {
+    $set:{
+      comments:
+        comment._id
+    }
+  }).then(comments=>{
+    res.status(200).json({sucess:true, comments});
+  }).catch(error=>{
+    res.status(400).json({error:error});
+  })
+
+  comment.save((err, userInfo)=>{ 
+    if(!req.body){return res.status(400).json({
+      status:'error',
+      error:'empty'});}
+});
+});
+
 
 module.exports = router;
