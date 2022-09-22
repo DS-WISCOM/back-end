@@ -14,7 +14,7 @@ const commentSchema = mongoose.Schema({
   content: { // 내용
     type: String
   }
-}, {timestamp : true})
+}, {timestamps : true})
 
 const Comment = mongoose.model('Comment', commentSchema)
 

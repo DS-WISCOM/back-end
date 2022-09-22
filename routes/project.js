@@ -26,6 +26,27 @@ router.get('/total', async (req, res) => {
 })
 
 // 프로젝트 상세 - get
+router.get('/:projectId',async(req,res)=>{
+  const projectId = mongoose.Types.ObjectId(req.params.projectId);
+  Project.findOne({"_id":projectId},
+  )
+  .then(async projects=>{
+    const comment = Number(req.query.comment || 1); //1: default (1~8)
+    const perComment = Number(req.query.perComment || 3);
+    const total = await Comment.countDocuments({project_id:projectId});
+    console.log(projects);
+    const result = await Comment.find({project_id:projectId}) 
+      .sort( {createdAt:-1})
+      .skip(perComment * (comment - 1)) //검색 시 포함하지 않을 데이터 수
+      .limit(perComment);
+    const totalPage = Math.ceil(total / perComment);
+    console.log(total);
+    res.json({result,projects});
+}).catch(err=>{
+  console.error(err);
+})
+})
+
 
 // 좋아요 등록 - post
 
@@ -33,8 +54,7 @@ router.get('/total', async (req, res) => {
 router.post('/:projectId/addComment',(req, res) => {
   const comment=new Comment(req.body);
   const projectId = mongoose.Types.ObjectId(req.params.projectId);
-  console.log(projectId);
-  console.log(comment._id);
+  comment.project_id=projectId;
   Project.updateOne({"_id":projectId},
   {
     $set:{
