@@ -21,7 +21,8 @@ router.use(
   })
 );
 
-// 프로젝트 전체 목록 - get, query
+// 프로젝트 전체 목록 - get
+// query: page, sort
 router.get("/total", async (req, res) => {
   try {
     //Pagenation
@@ -34,32 +35,35 @@ router.get("/total", async (req, res) => {
       .skip(perPage * (page - 1)) //검색 시 포함하지 않을 데이터 수
       .limit(perPage);
 
-    console.log(projects);
-    res.json(projects);
+    res.status(200).json({ success: true, projects });
   } catch (err) {
-    console.error(err);
+    return res
+      .status(200)
+      .json({ success: false, message: "Failed to load project list", err });
   }
 });
 
 // 프로젝트 상세 - get
+// query: page
 router.get("/:projectId", async (req, res) => {
   const projectId = mongoose.Types.ObjectId(req.params.projectId);
+
   Project.findOne({ _id: projectId })
     .then(async (projects) => {
-      const comment = Number(req.query.comment || 1);
-      const perComment = Number(req.query.perComment || 3); // 댓글 3개 보여줌
-      const total = await Comment.countDocuments({ project_id: projectId });
-      console.log(projects);
-      const result = await Comment.find({ project_id: projectId })
+      const page = Number(req.query.page || 1); // page
+      const perPage = 3; // 댓글 3개 보여줌
+
+      const comments = await Comment.find({ project_id: projectId })
         .sort({ createdAt: -1 })
-        .skip(perComment * (comment - 1)) //검색 시 포함하지 않을 데이터 수
-        .limit(perComment);
-      const totalPage = Math.ceil(total / perComment);
-      console.log(total);
-      res.json({ result, projects });
+        .skip(perPage * (page - 1)) //검색 시 포함하지 않을 데이터 수
+        .limit(perPage);
+
+      res.json({ comments, projects });
     })
     .catch((err) => {
-      console.error(err);
+      return res
+        .status(200)
+        .json({ success: false, message: "Failed to load detail", err });
     });
 });
 
@@ -105,10 +109,13 @@ router.post("/:projectId/addLike", async (req, res, next) => {
         );
       }
     }
-    return res.status(200).json({ success: true });
+    return res
+      .status(200)
+      .json({ success: true, message: "Success in adding likes" });
   } catch (err) {
-    console.log(err);
-    return res.status(200).json({ success: false });
+    return res
+      .status(200)
+      .json({ success: false, message: "failed to adding likes", err });
   }
 
   // Version 2. 변수로 처리.
@@ -135,30 +142,31 @@ router.post("/:projectId/addLike", async (req, res, next) => {
 router.post("/:projectId/addComment", (req, res) => {
   const comment = new Comment(req.body);
   const projectId = mongoose.Types.ObjectId(req.params.projectId);
-  comment.project_id = projectId;
-  Project.updateOne(
-    { _id: projectId },
-    {
-      $set: {
-        comments: comment._id,
-      },
-    }
-  )
-    .then((comments) => {
-      res.status(200).json({ sucess: true, comments });
-    })
-    .catch((error) => {
-      res.status(400).json({ error: error });
-    });
 
-  comment.save((err, userInfo) => {
-    if (!req.body) {
-      return res.status(400).json({
-        status: "error",
-        error: "empty",
+  comment.project_id = projectId;
+
+  Project.updateOne({ _id: projectId }, { $push: { comments: comment._id } })
+    .then((comments) => {
+      comment.save((err, commentInfo) => {
+        if (err) {
+          return res
+            .status(200)
+            .json({ success: false, message: "Failed to add comment", err });
+        } else if (commentInfo !== null)
+          return res.status(200).json({
+            success: true,
+            message: "Comment successful",
+            commentInfo,
+          });
       });
-    }
-  });
+    })
+    .catch((err) => {
+      res.status(200).json({
+        success: false,
+        message: "Failed to Add commentID to Project document",
+        err,
+      });
+    });
 });
 
 module.exports = router;
