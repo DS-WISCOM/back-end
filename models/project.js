@@ -5,7 +5,7 @@ const Schema = mongoose.Schema;
 const projectSchema = mongoose.Schema({ 
   name:{ // 프로젝트명
       type: String,
-  },
+    },
   introduce:{ // 프로젝트 소개
       type: String,
   },
