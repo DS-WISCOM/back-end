@@ -6,12 +6,12 @@ paths:
       tags: [Project]
       parameters:
         - name: page
-          description: "1~8 (1: default) / Up to 8 pages per page."
+          description: "(1: default)/ Up to 8 pages per page."
           in: query
           schema:
             type: Number
         - name: sort
-          description: "1: 이름순, 2: 인기순 (1: default)"
+          description: "(1: default)/ 1: 이름순, 2: 인기순"
           in: query
           schema:
             type: Number

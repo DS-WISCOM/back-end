@@ -26,7 +26,7 @@ router.use(
 router.get("/total", async (req, res) => {
   try {
     //Pagenation
-    const page = Number(req.query.page || 1); //1: default (1~8)
+    const page = Number(req.query.page || 1); //1: default
     const perPage = 8;
     const sort = Number(req.query.sort || 1); //1: defalut 이름순, 2: 인기순
 
