@@ -30,6 +30,7 @@ paths:
     post:
       summary: 좋아요 추가
       description: params로 project의 ID를 가져와서 그 프로젝트의 좋아요를 추가합니다. 
+      tags: [Project]
       parameters:
         - name: projectId
           description: 프로젝트의 id
