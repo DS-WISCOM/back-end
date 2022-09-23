@@ -11,37 +11,35 @@ const { Comment } = require("../models/comment.js");
 require("dotenv").config({ path: ".env" });
 
 // session
-router.use(
-  session({
-    secret: process.env.SESSION_SECRET,
-    resave: false,
-    saveUninitialized: false,
-    store: MongoStore.create({ mongoUrl: process.env.mongoURI }), // session 저장 장소 (Mongodb로 설정)
-    cookie: { maxAge: 60 * 60 * 24 }, // 24시간 뒤 만료(자동 삭제)
-  })
-);
 
-// 프로젝트 전체 목록 - get
-// query: page, sort
-router.get("/total", async (req, res) => {
-  try {
-    //Pagenation
-    const page = Number(req.query.page || 1); //1: default
-    const perPage = 8;
-    const sort = Number(req.query.sort || 1); //1: defalut 이름순, 2: 인기순
+router.use(session({
+  secret: process.env.SESSION_SECRET, 
+  resave: true, 
+  saveUninitialized: false,
+  store: MongoStore.create({ mongoUrl: process.env.mongoURI }), // session 저장 장소 (Mongodb로 설정)
+  cookie: { maxAge: 60*60*24 }      // 24시간 뒤 만료(자동 삭제)
+}));
 
-    const projects = await Project.find({})
-      .sort(sort == 1 ? { name: 1 } : { likes: 1 }) //-1: desc, 1: asc
-      .skip(perPage * (page - 1)) //검색 시 포함하지 않을 데이터 수
-      .limit(perPage);
 
-    res.status(200).json({ success: true, projects });
-  } catch (err) {
-    return res
-      .status(200)
-      .json({ success: false, message: "Failed to load project list", err });
-  }
-});
+// 프로젝트 전체 목록 - get, query
+router.get('/total', async (req, res) => {
+    try {
+        //Pagenation
+        const page = Number(req.query.page || 1); //1: default (1~8)
+        const perPage = 8;
+        const sort = Number(req.query.sort || 1); //1: defalut 이름순, 2: 인기순
+        
+        const projects = await Project.find({}) 
+            .sort( sort == 1 ? { name : 1 } : { likes : 1 }) //-1: desc, 1: asc
+            .skip(perPage * (page - 1)) //검색 시 포함하지 않을 데이터 수
+            .limit(perPage);
+
+        console.log(projects);
+        res.json(projects);
+      } catch (err) {
+        console.error(err);
+      }
+})
 
 // 프로젝트 상세 - get
 // query: page
@@ -104,10 +102,19 @@ router.post("/:projectId/addLike", async (req, res, next) => {
         req.session.projectId.push(projectId);
 
         // 좋아요 +1
-        await Project.findOneAndUpdate(
-          { _id: projectId },
-          { $inc: { likes: 1 } }
-        );
+        await Project.findOneAndUpdate({ _id: projectId }, { $inc: { likes: 1 } });
+        // p = await Project.findOneAndUpdate({ _id: mongoose.Types.ObjectId(projectId) }, { $inc: { likes: 1 } }, { new: true });
+      } 
+      else { // 좋아요를 누른 적 있을 때
+        const flag = req.session.projectId.includes(projectId);
+        // 현 projectId가 없다면 추가
+        if (!flag) {
+          req.session.projectId.push(projectId);
+          
+          // 좋아요 +1
+          await Project.findOneAndUpdate({ _id: projectId }, { $inc: { likes: 1 } });
+        }
+
       }
     }
     return res
@@ -127,7 +134,7 @@ router.post("/:projectId/addLike", async (req, res, next) => {
   //     if (!alreadyLiked) {
   //       // 좋아요 +1
   //       await Project.findOneAndUpdate({ _id: mongoose.Types.ObjectId(projectId) }, { $inc: { likes: 1 } });
-  //       flag = false;
+  //       alreadyLiked = false;
   //       return res.status(200).json({ success: true, alreadyLiked: alreadyLiked });
   //     }
   //     else {
