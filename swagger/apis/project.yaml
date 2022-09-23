@@ -3,6 +3,7 @@ paths:
     get:
       summary: 전체 프로젝트 조회
       description: 프로젝트의 모든 정보를 가져옵니다.
+      tags: [Project]
       parameters:
         - name: page
           description: "1~8 (1: default) / Up to 8 pages per page."
@@ -15,21 +16,23 @@ paths:
           schema:
             type: Number
       responses:
-        '200':
+        "200":
           description: 프로젝트 조회 성공
   /api/insert/image:
     post:
       summary: 이미지 추가
       description: s3에 이미지를 저장합니다.
-      
+      tags: [Project]
+
       responses:
-        '200':
+        "200":
           description: 이미지 업로드 성공
-  
+
   /api/project/{projectId}/addLike:
     post:
       summary: 좋아요 추가
-      description: params로 project의 ID를 가져와서 그 프로젝트의 좋아요를 추가합니다. 
+      description: params로 project의 ID를 가져와서 그 프로젝트의 좋아요를 추가합니다.
+      tags: [Project]
       parameters:
         - name: projectId
           description: 프로젝트의 id
@@ -41,7 +44,7 @@ paths:
               value: "632aeb2752930aa3ed38a101"
               summary: "example project Id"
       responses:
-        '200':
+        "200":
           description: 좋아요 추가 성공
           content:
             application/json:
@@ -50,4 +53,3 @@ paths:
                 properties:
                   success:
                     type: boolean
-  
