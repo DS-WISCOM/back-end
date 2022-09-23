@@ -1,1 +1,59 @@
-
+paths:
+  /api/developer/total:
+    get:
+      summary: 전체 개발자 정보 조회
+      description: get으로 전체 개발자의 모든 정보를 가져옵니다.
+      tags: [Developer]
+      parameters:
+        - name: page
+          description: "1~8 (1: default) / Up to 8 pages per page."
+          in: query
+          schema:
+            type: Number
+          examples:
+            Sample:
+              value: "1"
+              summary: "example page number"
+      responses:
+        "200":
+          description: 전체 개발자 정보 조회 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  developers:
+                    type: array
+                    items:
+                      type: string
+                      description: "array of 8 Developers info"
+                    minItems: 1
+                    maxItems: 8
+  /api/developer/:memberId:
+    get:
+      summary: memberId이용 개발자 세부정보 조회
+      description: get으로 전체 개발자의 모든 정보를 가져옵니다.
+      tags: [Developer]
+      parameters:
+        - name: memberId
+          description: "세부정보 필요한 member의 Id"
+          in: path
+          required: true
+          schema:
+            type: string
+          examples:
+            Sample:
+              value: "20170815"
+              summary: "example memberId(학번)"
+      responses:
+        "200":
+          description: memberId이용 개발자 세부정보 조회 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
