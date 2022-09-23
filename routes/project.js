@@ -48,17 +48,18 @@ router.get("/total", async (req, res) => {
 router.get("/:projectId", async (req, res) => {
   const projectId = mongoose.Types.ObjectId(req.params.projectId);
 
+  //findOne : 하나의 문서 찾기
   Project.findOne({ _id: projectId })
     .then(async (projects) => {
-      const page = Number(req.query.page || 1); // page
+      const page = Number(req.query.page || 1); // page : 현재페이지  //값x -> 기본값으로 1  //query는 문자열로 전달해서 Number로 형변환
       const perPage = 3; // 댓글 3개 보여줌
 
-      const comments = await Comment.find({ project_id: projectId })
-        .sort({ createdAt: -1 })
+      const comments = await Comment.find({ project_id: projectId }) //await 비동기 처리되는 부분 앞에 
+        .sort({ createdAt: -1 })  // 최근순으로 정렬
         .skip(perPage * (page - 1)) //검색 시 포함하지 않을 데이터 수
-        .limit(perPage);
+        .limit(perPage); //검색 결과 수 제한
 
-      res.json({ comments, projects });
+      res.json({ comments, projects });  //처리되면 projects를 출력
     })
     .catch((err) => {
       return res
@@ -145,7 +146,8 @@ router.post("/:projectId/addComment", (req, res) => {
 
   comment.project_id = projectId;
 
-  Project.updateOne({ _id: projectId }, { $push: { comments: comment._id } })
+  //updateOne : 데이터 수정 함수
+  Project.updateOne({ _id: projectId }, { $push: { comments: comment._id } })  //$push : 배열이 이미 존재하면 배열 끝에 요소를 추가, 존재하지 않으면 새로운 배열을 생성
     .then((comments) => {
       comment.save((err, commentInfo) => {
         if (err) {
