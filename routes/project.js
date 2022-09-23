@@ -13,7 +13,7 @@ require("dotenv").config({ path: ".env" });
 // session
 router.use(session({
   secret: process.env.SESSION_SECRET, 
-  resave: false, 
+  resave: true, 
   saveUninitialized: false,
   store: MongoStore.create({ mongoUrl: process.env.mongoURI }), // session 저장 장소 (Mongodb로 설정)
   cookie: { maxAge: 60*60*24 }      // 24시간 뒤 만료(자동 삭제)
@@ -61,18 +61,9 @@ router.post('/:projectId/addLike', async(req, res, next) => {
         // p = await Project.findOneAndUpdate({ _id: mongoose.Types.ObjectId(projectId) }, { $inc: { likes: 1 } }, { new: true });
       } 
       else { // 좋아요를 누른 적 있을 때
-        let project_arr = req.session.projectId;
-        let flag = true;
-
-        // 현 projectId가 있는지 확인
-        for (let i = 0; i < project_arr.length ; i++) {
-          if (project_arr[i] === projectId) {
-              flag = false;
-              break;
-          }
-        }
+        const flag = req.session.projectId.includes(projectId);
         // 현 projectId가 없다면 추가
-        if (flag) {
+        if (!flag) {
           req.session.projectId.push(projectId);
           
           // 좋아요 +1
@@ -93,7 +84,7 @@ router.post('/:projectId/addLike', async(req, res, next) => {
   //     if (!alreadyLiked) {
   //       // 좋아요 +1
   //       await Project.findOneAndUpdate({ _id: mongoose.Types.ObjectId(projectId) }, { $inc: { likes: 1 } });
-  //       flag = false;
+  //       alreadyLiked = false;
   //       return res.status(200).json({ success: true, alreadyLiked: alreadyLiked });
   //     }
   //     else {
