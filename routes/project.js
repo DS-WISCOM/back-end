@@ -25,17 +25,11 @@ router.use(session({
 router.get('/total', async (req, res) => {
     try {
         //Pagenation
-        const page = Number(req.query.page || 1); //1: default (1~8)
-        const perPage = 8;
-        const sort = Number(req.query.sort || 1); //1: defalut 이름순, 2: 인기순
         
         const projects = await Project.find({}) 
-            .sort( sort == 1 ? { name : 1 } : { likes : 1 }) //-1: desc, 1: asc
-            .skip(perPage * (page - 1)) //검색 시 포함하지 않을 데이터 수
-            .limit(perPage);
+            .sort({ name : 1 })
 
-        console.log(projects);
-        res.json(projects);
+        res.status(200).json({ success: true, ProjectList: projects });
       } catch (err) {
         console.error(err);
       }
