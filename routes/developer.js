@@ -19,10 +19,26 @@ router.get("/total", async (req, res) => {
     }
 });
 
+// 전체 개발자 명단 + 이름정렬 - get
+router.get("/developerList", async (req, res) => {
+    const memList = await Developer.find({})
+    .sort({ name_kr: 1});
+
+    try{
+        res.json({ success: true, developerList: memList });
+    } catch (err) {
+        return res
+        .status(200)
+        .json({ success: false, message: "failed", err });
+    }
+    
+});
+
 // 팀원 상세 불러오기 - get
 router.get("/:memberId", async (req, res) => {
     const memberId = req.params.memberId;
-    const memdetail = await Developer.find({ developer_id: memberId});
+    const memdetail = await Developer.find({ developer_id: memberId})
+    .populate({path: "project_id", model: "Project", select: ["name", "img"]});
     try{
         res.json({ success: true, MemberDetail: memdetail });
     } catch (err) {
