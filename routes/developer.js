@@ -28,6 +28,11 @@ router.get("/total", async (req, res) => {
     const page = Number(req.query.page || 1);
     const perPage = 8;
     const developers = await Developer.find({})
+      .populate({
+        path: "project_id",
+        model: "Project",
+        select: ["name"],
+      })
       .sort({ name_kr: 1 })
       .skip(perPage * (page - 1)) //검색 시 포함하지 않을 데이터 수
       .limit(perPage); //한 페이지 최대 팀원 수
