@@ -57,3 +57,20 @@ paths:
                 properties:
                   success:
                     type: boolean
+  /api/developer/developerList:
+    get:
+      summary: 페이지네이션 없는 전체 개발자 정보 조회
+      description: get으로 전체 개발자의 모든 정보를 가져옵니다.
+      tags: [Developer]
+      responses:
+        "200":
+          description: 전체 개발자 정보 조회 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  developers:
+                    type: array
