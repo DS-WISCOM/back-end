@@ -36,7 +36,20 @@ router.get("/total", async (req, res) => {
       .sort({ name_kr: 1 })
       .skip(perPage * (page - 1)) //검색 시 포함하지 않을 데이터 수
       .limit(perPage); //한 페이지 최대 팀원 수
-    res.status(200).json({ success: true, DeveloperList: developers });
+    
+    // 마지막 페이지인지 알려주는 isLast
+    let isLast = false;
+    const totalCount = await Developer.countDocuments({});
+    if (totalCount % perPage == 0) {
+      if (page == parseInt(totalCount/perPage)) {
+        isLast = true;
+      }
+    }
+    else if (page == parseInt(totalCount/perPage) + 1) {
+      isLast = true;
+    }
+    
+    res.status(200).json({ success: true, DeveloperList: developers , isLast: isLast });
   } catch (err) {
     return res
       .status(200)

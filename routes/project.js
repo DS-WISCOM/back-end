@@ -19,7 +19,7 @@ router.use(
     resave: true,
     saveUninitialized: false,
     store: MongoStore.create({ mongoUrl: process.env.mongoURI }), // session 저장 장소 (Mongodb로 설정)
-    cookie: { maxAge: 60 * 60 * 24 }, // 24시간 뒤 만료(자동 삭제)
+    cookie: { maxAge: 1000 * 60 * 60 * 24 }, // 24시간 뒤 만료(자동 삭제)
   })
 );
 
@@ -27,7 +27,7 @@ router.use(
 router.get("/total", async (req, res) => {
   try {
     //Pagenation
-    const page = Number(req.query.page || 1); //1: default (1~8)
+    const page = Number(req.query.page || 1); //1: default
     const perPage = 8;
     const sort = Number(req.query.sort || 1); //1: defalut 이름순, 2: 인기순
     const projects = await Project.find({})
@@ -35,7 +35,19 @@ router.get("/total", async (req, res) => {
       .skip(perPage * (page - 1)) //검색 시 포함하지 않을 데이터 수
       .limit(perPage);
 
-    res.status(200).json({ success: true, ProjectList: projects });
+    // 마지막 페이지인지 알려주는 isLast
+    let isLast = false;
+    const totalCount = await Project.countDocuments({});
+    if (totalCount % perPage == 0) {
+      if (page == parseInt(totalCount/perPage)) {
+        isLast = true;
+      }
+    }
+    else if (page == parseInt(totalCount/perPage) + 1) {
+      isLast = true;
+    }
+
+    res.status(200).json({ success: true, ProjectList: projects, isLast: isLast });
   } catch (err) {
     console.error(err);
   }
@@ -94,21 +106,13 @@ router.post("/:projectId/addLike", async (req, res, next) => {
         { _id: projectId },
         { $inc: { likes: 1 } }
       );
-      // p = await Project.findOneAndUpdate({ _id: mongoose.Types.ObjectId(projectId) }, { $inc: { likes: 1 } }, { new: true });
     } else {
       // 좋아요를 누른 적 있을 때
-      let project_arr = req.session.projectId;
-      let flag = true;
-
       // 현 projectId가 있는지 확인
-      for (let i = 0; i < project_arr.length; i++) {
-        if (project_arr[i] === projectId) {
-          flag = false;
-          break;
-        }
-      }
+      const included = req.session.projectId.includes(projectId);
+
       // 현 projectId가 없다면 추가
-      if (flag) {
+      if (!included) {
         req.session.projectId.push(projectId);
 
         // 좋아요 +1
@@ -117,20 +121,7 @@ router.post("/:projectId/addLike", async (req, res, next) => {
           { $inc: { likes: 1 } }
         );
         // p = await Project.findOneAndUpdate({ _id: mongoose.Types.ObjectId(projectId) }, { $inc: { likes: 1 } }, { new: true });
-      } else {
-        // 좋아요를 누른 적 있을 때
-        const flag = req.session.projectId.includes(projectId);
-        // 현 projectId가 없다면 추가
-        if (!flag) {
-          req.session.projectId.push(projectId);
-
-          // 좋아요 +1
-          await Project.findOneAndUpdate(
-            { _id: projectId },
-            { $inc: { likes: 1 } }
-          );
-        }
-      }
+      } 
     }
     return res
       .status(200)

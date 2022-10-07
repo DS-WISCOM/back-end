@@ -24,6 +24,9 @@ paths:
                 properties:
                   success:
                     type: boolean
+                  isLast:
+                    type: boolean
+                    description: 마지막 페이지이면 true, 아니면 false
                   developers:
                     type: array
                     items:

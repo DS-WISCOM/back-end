@@ -18,6 +18,17 @@ paths:
       responses:
         "200":
           description: 프로젝트 조회 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    description: 성공 여부
+                  isLast:
+                    type: boolean
+                    description: 마지막 페이지이면 true, 아니면 false
   /api/insert/image:
     post:
       summary: 이미지 추가
