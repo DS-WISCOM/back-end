@@ -27,7 +27,7 @@ router.use(
 router.get("/total", async (req, res) => {
   try {
     //Pagenation
-    const page = Number(req.query.page || 1); //1: default (1~8)
+    const page = Number(req.query.page || 1); //1: default
     const perPage = 8;
     const sort = Number(req.query.sort || 1); //1: defalut 이름순, 2: 인기순
     const projects = await Project.find({})
@@ -35,7 +35,19 @@ router.get("/total", async (req, res) => {
       .skip(perPage * (page - 1)) //검색 시 포함하지 않을 데이터 수
       .limit(perPage);
 
-    res.status(200).json({ success: true, ProjectList: projects });
+    // 마지막 페이지인지 알려주는 isLast
+    let isLast = false;
+    const totalCount = await Project.countDocuments({});
+    if (totalCount % perPage == 0) {
+      if (page == parseInt(totalCount/perPage)) {
+        isLast = true;
+      }
+    }
+    else if (page == parseInt(totalCount/perPage) + 1) {
+      isLast = true;
+    }
+
+    res.status(200).json({ success: true, ProjectList: projects, isLast: isLast });
   } catch (err) {
     console.error(err);
   }
