@@ -91,6 +91,9 @@ paths:
                 properties:
                   success:
                     type: boolean
+                  alreadyLiked:
+                    type: boolean
+                    description: 이번 좋아요를 누르기 전에 이미 좋아요를 눌렀는지 여부
 
   /api/project/{projectId}/addComment:
     post:

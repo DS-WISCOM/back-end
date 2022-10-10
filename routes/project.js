@@ -106,6 +106,10 @@ router.post("/:projectId/addLike", async (req, res, next) => {
         { _id: projectId },
         { $inc: { likes: 1 } }
       );
+
+      return res
+        .status(200)
+        .json({ success: true, alreadyLiked: false, message: "Success in adding likes" });
     } else {
       // 좋아요를 누른 적 있을 때
       // 현 projectId가 있는지 확인
@@ -121,11 +125,17 @@ router.post("/:projectId/addLike", async (req, res, next) => {
           { $inc: { likes: 1 } }
         );
         // p = await Project.findOneAndUpdate({ _id: mongoose.Types.ObjectId(projectId) }, { $inc: { likes: 1 } }, { new: true });
+        return res
+        .status(200)
+        .json({ success: true, alreadyLiked: false, message: "Success in adding likes" });
       } 
+      else {
+        res
+        .status(200)
+        .json({ success: true, alreadyLiked: true, message: "Already push like" });
+      };
     }
-    return res
-      .status(200)
-      .json({ success: true, message: "Success in adding likes" });
+    
   } catch (err) {
     return res
       .status(200)
