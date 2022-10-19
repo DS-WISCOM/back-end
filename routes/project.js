@@ -12,11 +12,10 @@ const { Developer } = require("../models/developer.js");
 require("dotenv").config({ path: ".env" });
 
 // session
-
 router.use(
   session({
     secret: process.env.SESSION_SECRET,
-    resave: true,
+    resave: false,
     saveUninitialized: false,
     store: MongoStore.create({ mongoUrl: process.env.mongoURI }), // session 저장 장소 (Mongodb로 설정)
     cookie: { maxAge: 1000 * 60 * 60 * 24 }, // 24시간 뒤 만료(자동 삭제)
@@ -86,6 +85,15 @@ router.get("/:projectId", async (req, res) => {
         .status(200)
         .json({ success: false, message: "Failed to load detail", err });
     });
+});
+
+// 좋아요 여부 확인 - get
+router.get("/:projectId/alreadyLiked", (req, res, next) => {
+  return res
+        .status(200)
+        .json({ success: true, 
+          alreadyLiked: (req.session.projectId != undefined && req.session.projectId.includes(req.params.projectId)) ? true : false, 
+          message: "Check whether Like is already pushed or not" });
 });
 
 // 좋아요 등록 - post

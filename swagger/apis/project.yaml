@@ -66,6 +66,35 @@ paths:
                   success:
                     type: boolean
 
+  /api/project/{projectId}/alreadyLiked:
+    get:
+      summary: 좋아요 여부 확인
+      description: params로 project의 ID를 가져와서 그 프로젝트에 좋아요를 이미 눌렀는지 여부를 확인합니다.
+      tags: [Project]
+      parameters:
+        - name: projectId
+          description: 프로젝트의 id
+          in: path
+          schema:
+            type: String
+          examples:
+            Sample:
+              value: "632aeb2752930aa3ed38a101"
+              summary: "example project Id"
+      responses:
+        "200":
+          description: 좋아요 조회 여부 확인
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  alreadyLiked:
+                    type: boolean
+                    description: 이번 좋아요를 누르기 전에 이미 좋아요를 눌렀는지 여부
+
   /api/project/{projectId}/addLike:
     post:
       summary: 좋아요 추가
