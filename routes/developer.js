@@ -10,12 +10,9 @@ router.get("/totalName", async (req, res) => {
     const developers = await Developer.find({}, { _id: 0, name_kr: 1 }).sort({
       name_kr: 1,
     });
-    console.log(developers);
     for (let i = 0; i < developers.length; i++) {
       nameList.push(developers[i].name_kr);
     }
-    console.log("실행1");
-    console.log(nameList);
     res.status(200).json({ success: true, nameList: nameList });
   } catch (err) {
     return res
