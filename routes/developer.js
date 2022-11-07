@@ -10,9 +10,11 @@ router.get("/totalName", async (req, res) => {
     const developers = await Developer.find({}, { _id: 0, name_kr: 1 }).sort({
       name_kr: 1,
     });
+    console.log(developers);
     for (let i = 0; i < developers.length; i++) {
-      nameList.push(developers[i].nameList.name_kr);
+      nameList.push(developers[i].name_kr);
     }
+    console.log("실행1");
     console.log(nameList);
     res.status(200).json({ success: true, nameList: nameList });
   } catch (err) {
@@ -36,20 +38,21 @@ router.get("/total", async (req, res) => {
       .sort({ name_kr: 1 })
       .skip(perPage * (page - 1)) //검색 시 포함하지 않을 데이터 수
       .limit(perPage); //한 페이지 최대 팀원 수
-    
+
     // 마지막 페이지인지 알려주는 isLast
     let isLast = false;
     const totalCount = await Developer.countDocuments({});
     if (totalCount % perPage == 0) {
-      if (page == parseInt(totalCount/perPage)) {
+      if (page == parseInt(totalCount / perPage)) {
         isLast = true;
       }
-    }
-    else if (page == parseInt(totalCount/perPage) + 1) {
+    } else if (page == parseInt(totalCount / perPage) + 1) {
       isLast = true;
     }
-    
-    res.status(200).json({ success: true, DeveloperList: developers , isLast: isLast });
+
+    res
+      .status(200)
+      .json({ success: true, DeveloperList: developers, isLast: isLast });
   } catch (err) {
     return res
       .status(200)
