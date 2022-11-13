@@ -33,7 +33,6 @@ const developerSchema = mongoose.Schema({
   impression: {
     // 마무리 소감
     type: String,
-    maxlength: 350,
   },
   role: {
     // 역할
